@@ -30,7 +30,7 @@ public class HeapBinomial {
     }
 
     public NodoBinomial unir(HeapBinomial nuevoNodo) {
-        NodoBinomial nuevoNodoRaiz = fusionar(this, nuevoNodo);
+        NodoBinomial nuevoNodoRaiz = unir(this, nuevoNodo);
         this.raiz = null;
         nuevoNodo.raiz = null;
         if (nuevoNodoRaiz == null) { // caso 1: la raíz del nuevo nodo es nula, lo que significa que no hay nodos en
@@ -67,7 +67,7 @@ public class HeapBinomial {
         return nuevoNodoRaiz;
     }
 
-    private NodoBinomial fusionar(HeapBinomial heap1, HeapBinomial heap2) {
+    public NodoBinomial unir(HeapBinomial heap1, HeapBinomial heap2) {
         NodoBinomial nuevaRaiz = null;
         if (heap1.getRaiz() == null) {
             nuevaRaiz = heap2.getRaiz();
@@ -226,4 +226,5 @@ public class HeapBinomial {
             }
         }
     }
+
 }
