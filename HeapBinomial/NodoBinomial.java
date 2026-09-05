@@ -1,13 +1,13 @@
 package HeapBinomial;
 
 public class NodoBinomial {
-    private int elemento;
+    private Comparable elemento;
     private int grado;
     private NodoBinomial padre;
     private NodoBinomial hijo;
     private NodoBinomial hermano;
 
-    public NodoBinomial(int elemento) {
+    public NodoBinomial(Comparable elemento) {
         this.elemento = elemento;
         this.grado = 0;
         this.padre = null;
@@ -15,11 +15,11 @@ public class NodoBinomial {
         this.hermano = null;
     }
 
-    public int getelemento() {
+    public Comparable getelemento() {
         return elemento;
     }
 
-    public void setelemento(int elemento) {
+    public void setelemento(Comparable elemento) {
         this.elemento = elemento;
     }
 
@@ -55,8 +55,8 @@ public class NodoBinomial {
         this.hermano = hermano;
     }
 
-    public int compareTo(NodoBinomial otroNodo) {
-        return Integer.compare(this.elemento, otroNodo.elemento);
+    public int compareTo(Comparable otroElemento) {
+        return this.elemento.compareTo(otroElemento);
     }
 
     public String toString() {

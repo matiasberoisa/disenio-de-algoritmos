@@ -23,7 +23,7 @@ public class HeapBinomial {
         raiz = null;
     }
 
-    public void insertar(int elemento) {
+    public void insertar(Comparable elemento) {
         NodoBinomial nuevoNodo = new NodoBinomial(elemento);
         HeapBinomial nuevoHeap = new HeapBinomial(nuevoNodo);
         this.raiz = unir(nuevoHeap);
@@ -48,7 +48,7 @@ public class HeapBinomial {
                     anterior = actual;
                     actual = siguiente;
                 } else {
-                    if (actual.compareTo(siguiente) <= 0) {
+                    if (actual.compareTo(siguiente.getelemento()) <= 0) {
                         actual.setHermano(siguiente.getHermano());
                         enlazar(siguiente, actual);
                     } else {
@@ -122,7 +122,7 @@ public class HeapBinomial {
         NodoBinomial nodoMinimo = this.raiz;
         NodoBinomial nodoActual = this.raiz.getHermano();
         while (nodoActual != null) {
-            if (nodoActual.compareTo(nodoMinimo) < 0) {
+            if (nodoActual.compareTo(nodoMinimo.getelemento()) < 0) {
                 nodoMinimo = nodoActual;
             }
             nodoActual = nodoActual.getHermano();
@@ -142,7 +142,7 @@ public class HeapBinomial {
         return cadena;
     }
 
-    public boolean eliminar(int elemento) {
+    public boolean eliminar(Comparable elemento) {
         boolean exito = false;
         if (!this.esVacio()) {
             NodoBinomial nodoBuscado = buscarNodo(this.raiz, elemento);
@@ -158,7 +158,7 @@ public class HeapBinomial {
             } else { // Si el nodo buscado no es la raíz, se actualiza el hermano del padre del nodo
                      // buscado
                 NodoBinomial nodoAnterior = nodoBuscado.getPadre();
-                while (nodoAnterior.compareTo(nodoBuscado) != 0) {
+                while (nodoAnterior.compareTo(nodoBuscado.getelemento()) != 0) {
                     nodoAnterior = nodoAnterior.getHermano();
                 }
                 eliminarAux(nodoAnterior, nodoBuscado);
@@ -167,10 +167,10 @@ public class HeapBinomial {
         return exito;
     }
 
-    private NodoBinomial buscarNodo(NodoBinomial nodoActual, int elemento) {
+    private NodoBinomial buscarNodo(NodoBinomial nodoActual, Comparable elemento) {
         NodoBinomial nodoEncontrado = null;
         if (nodoActual != null) {
-            if (nodoActual.getelemento() == elemento) {
+            if (nodoActual.compareTo(elemento) == 0) {
                 nodoEncontrado = nodoActual;
             } else {
                 NodoBinomial hijoEncontrado = buscarNodo(nodoActual.getHijo(), elemento);
@@ -211,13 +211,14 @@ public class HeapBinomial {
         }
     }
 
-    public void disminuirClave(int elemento, int nuevoElem) {
+    public void disminuirClave(Comparable elemento, Comparable nuevoElem) {
         if (!this.esVacio()) {
             NodoBinomial nodoBuscado = buscarNodo(this.raiz, elemento);
             if (nodoBuscado != null) {
                 nodoBuscado.setelemento(nuevoElem);
-                while (nodoBuscado.getPadre() != null && nodoBuscado.compareTo(nodoBuscado.getPadre()) < 0) {
-                    int temp = nodoBuscado.getelemento();
+                while (nodoBuscado.getPadre() != null
+                        && nodoBuscado.compareTo(nodoBuscado.getPadre().getelemento()) < 0) {
+                    Comparable temp = nodoBuscado.getelemento();
                     nodoBuscado.setelemento(nodoBuscado.getPadre().getelemento());
                     nodoBuscado.getPadre().setelemento(temp);
                     nodoBuscado = nodoBuscado.getPadre();
