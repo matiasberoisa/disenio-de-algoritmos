@@ -29,15 +29,11 @@ public class HeapBinomial {
         this.raiz = unir(nuevoHeap);
     }
 
-    public NodoBinomial unir(HeapBinomial nuevoNodo) {
-        NodoBinomial nuevoNodoRaiz = unir(this, nuevoNodo);
-        this.raiz = null;
-        nuevoNodo.raiz = null;
-        if (nuevoNodoRaiz == null) { // caso 1: la raíz del nuevo nodo es nula, lo que significa que no hay nodos en
-                                     // el heap
-            nuevoNodoRaiz = null;
-        } else { // caso 2: la raíz del nuevo nodo no es nula, lo que significa que hay nodos en
-                 // el heap
+    private NodoBinomial unir(HeapBinomial nuevoNodo) {
+        NodoBinomial nuevoNodoRaiz = unir(this, nuevoNodo); // Unir los dos heaps binomiales y obtener la nueva raíz
+        this.raiz = null; // Vaciar el heap actual antes de consolidar los árboles binomiales
+        nuevoNodo.raiz = null;// Vaciar el heap que se está uniendo antes de consolidar los árboles binomiales
+        if (nuevoNodoRaiz != null) { // Si la nueva raíz no es nula, se procede a consolidar los árboles binomiales
             NodoBinomial anterior = null;
             NodoBinomial actual = nuevoNodoRaiz;
             NodoBinomial siguiente = actual.getHermano();
@@ -146,7 +142,8 @@ public class HeapBinomial {
         boolean exito = false;
         if (!this.esVacio()) {
             NodoBinomial nodoBuscado = buscarNodo(this.raiz, elemento);
-            if (this.raiz == nodoBuscado) {// Si el nodo buscado es la raíz, se actualiza la raíz del heap
+            if (this.raiz.compareTo(nodoBuscado.getelemento()) == 0) {// Si el nodo buscado es la raíz, se actualiza la
+                                                                      // raíz del heap
                 if (this.raiz.getHermano() != null) {
                     this.raiz = nodoBuscado.getHermano();// Si hay hermanos, se actualiza la raíz del heap al hermano
                                                          // del
@@ -185,7 +182,7 @@ public class HeapBinomial {
     }
 
     private void eliminarAux(NodoBinomial nodoActual, NodoBinomial nuevoNodo) {
-        if (nodoActual.getelemento() == nuevoNodo.getelemento()) {
+        if (nodoActual.compareTo(nuevoNodo.getelemento()) == 0) {
             this.raiz.setHermano(nodoActual.getHermano());
         } else {
             nuevoNodo.setHermano(nodoActual.getHermano());
