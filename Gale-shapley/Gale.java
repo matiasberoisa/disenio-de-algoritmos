@@ -1,13 +1,14 @@
+
 public class Gale {
     private int[] hombres;
     private int[][] preferencias_Hombres;
     private int[][] preferencias_Mujeres;
     private int[] parejas;
     private int[] mujeres;
-    private int[][] prohibidos;
+    private Boolean[][] prohibidos;
 
     public Gale(int[] hombres, int[] mujeres, int[][] preferencias_Hombres, int[][] preferencias_Mujeres,
-            int[][] prohibidos) {
+            Boolean[][] prohibidos) {
         this.hombres = hombres;
         this.mujeres = mujeres;
         this.preferencias_Hombres = preferencias_Hombres;
@@ -30,7 +31,7 @@ public class Gale {
             pos = 0;
             posLista = 1;
             while (pos < preferencias_Hombres[hombreActual].length) {// creo la lista filtrada
-                if (prohibidos[hombreActual][pos] != 1) {
+                if (!prohibidos[hombreActual][pos]) {
                     pref_H.insertar(preferencias_Hombres[hombreActual][pos], posLista);
                     posLista++;
                 }
@@ -38,23 +39,22 @@ public class Gale {
             }
             System.out.println(pref_H.toString());
             if (hombresSolteros[hombreActual]) {
-                int mujerActual = 0;
-                while (mujerActual < mujeres.length) {
-                    int mujerPreferida = preferencias_Hombres[hombreActual][mujerActual];
-                    if (parejas[hombreActual] == -1 && prohibidos[hombreActual][mujerActual] != 1) { // La mujer
+                int mujerActual = 1;
+                pos = 0;
+                while (mujerActual <= pref_H.longitud()) {
+                    int mujerPreferida = (int) pref_H.recuperar(mujerActual); // Obtener la mujer preferida del hombre
+                                                                              // actual
+                    while (pos < parejas.length && parejas[pos] != mujerPreferida) {
+                        pos++;
+                    }
+                    if (parejas[hombreActual] == -1 && pos == parejas.length) { // La mujer
                         // está
                         // soltera y no
                         // está
                         // prohibida
-                        // int pos = 0;
-                        while (pos < parejas.length && parejas[pos] != mujerPreferida) {
-                            pos++;
-                        }
-                        if (pos == parejas.length) {
-                            // La mujer no está emparejada con ningún otro hombre
-                            parejas[hombreActual] = mujerPreferida; // Emparejar al hombre con la mujer
-                            hombresSolteros[hombreActual] = false; // El hombre ya no está soltero
-                        }
+                        // La mujer no está emparejada con ningún otro hombre
+                        parejas[hombreActual] = mujerPreferida; // Emparejar al hombre con la mujer
+                        hombresSolteros[hombreActual] = false; // El hombre ya no está soltero
                     }
                     mujerActual++;
                 }
@@ -76,12 +76,17 @@ public class Gale {
 
     public static void main(String[] args) {
         int[] hombres = { 1, 2, 3 };
-        int[] mujeres = { 4, 5, 6 };
-        int[][] preferencias_Hombres = { { 4, 5, 6 }, { 5, 6, 4 }, { 5, 4, 6 } }; // Preferencias de los
+        int[] mujeres = { 4, 5, 6, 7, 8 };
+        int[][] preferencias_Hombres = { { 4, 5, 6, 7, 8 }, { 5, 6, 4, 8, 7 }, { 5, 4, 6, 8, 7 } }; // Preferencias de
+                                                                                                    // los
         // hombres
         int[][] preferencias_Mujeres = { { 3, 1, 2 }, { 1, 3, 2 }, { 2, 3, 1 } }; // Preferencias de las
                                                                                   // mujeres
-        int[][] prohibidos = { { 0, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 } }; // La pareja (2, 6) está prohibida
+        Boolean[][] prohibidos = { { true, false, false, false, true }, { false, false, true, false, true },
+                { false, false, true, true, false } }; // La
+        // pareja
+        // (2, 6) está
+        // prohibida
 
         Gale galeShapley = new Gale(hombres, mujeres, preferencias_Hombres, preferencias_Mujeres, prohibidos);
         galeShapley.emparejar();
