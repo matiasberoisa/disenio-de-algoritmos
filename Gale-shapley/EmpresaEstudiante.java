@@ -1,57 +1,86 @@
 public class EmpresaEstudiante {
     private int[] empresas;
     private int[] estudiantes;
-    private int[][] preferencias_Empresas;
-    private int[][] preferencias_Estudiantes;
-    private int[] parejas;
+    private int[][] pref_emp;
+    private int[][] pref_est;
+    private int[] parEst;
+    private int[] parEmp;
 
-    public EmpresaEstudiante(int[] empresas, int[] estudiantes, int[][] preferencias_Empresas,
-            int[][] preferencias_Estudiantes) {
+    public EmpresaEstudiante(int[] empresas, int[] estudiantes, int[][] pref_emp,
+            int[][] pref_est) {
         this.empresas = empresas;
         this.estudiantes = estudiantes;
-        this.preferencias_Empresas = preferencias_Empresas;
-        this.preferencias_Estudiantes = preferencias_Estudiantes;
-        this.parejas = new int[empresas.length];
-        for (int i = 0; i < parejas.length; i++) {
-            parejas[i] = -1; // todos inicialmente están libres
+        this.pref_emp = pref_emp;
+        this.pref_est = pref_est;
+        this.parEst = new int[estudiantes.length];
+        this.parEmp = new int[empresas.length];
+        for (int i = 0; i < parEst.length; i++) {
+            parEst[i] = -1;
+        }
+        for (int i = 0; i < parEmp.length; i++) {
+            parEmp[i] = -1;
         }
     }
 
     public void empresas_proponen() {
-        boolean[] empresasLibres = new boolean[empresas.length];
-        int empresaActual = 0, estudianteAsignado, siguienteEmpresa, posEmpresa = 0, posEstudiante = 0,
-                estudianteElegido;
-        for (int i = 0; i < empresasLibres.length; i++) {
-            empresasLibres[i] = true; // Todas las empresas están libres al inicio
-
+        int empActual = 0, estEle, empAsign;
+        int[] sigProp = new int[empresas.length];
+        for (int i = 0; i < empresas.length; i++) {
+            sigProp[i] = 0;
         }
-        while (empresaLibre(empresasLibres) != -1) {
-            empresaActual = empresaLibre(empresasLibres);
-            estudianteElegido = preferencias_Empresas[empresaActual][posEstudiante];
-            estudianteAsignado = parejas[empresaActual]; // Obtener el estudiante asignado a la empresa actual
-            posEmpresa = empresaActual + 1; // Obtener la posición de la empresa actual en la lista de preferencias del
-                                            // estudiante
-            if (estudianteAsignado == -1) {// la empresa está libre
-                parejas[estudianteElegido] = empresaActual;
-                empresasLibres[empresaActual] = false;
-                posEstudiante++;
+        while (objetoLibre(parEmp) != -1) {
+            empActual = objetoLibre(parEmp);
+            if (sigProp[empActual] >= estudiantes.length) {
+                parEmp[empActual] = -1;
             } else {
-                siguienteEmpresa = preferencias_Estudiantes[estudianteAsignado][posEmpresa];
-                if (empresaActual < siguienteEmpresa) {// la siguiente empresa es mejor que la actual
-                    parejas[empresaActual] = preferencias_Empresas[siguienteEmpresa][posEstudiante];
-                    empresasLibres[empresaActual] = true;
-                    empresasLibres[siguienteEmpresa] = false;
-                    posEstudiante++;
+                estEle = pref_emp[empActual][sigProp[empActual]];
+                sigProp[empActual]++;
+                if (parEst[estEle] == -1) {
+                    parEst[estEle] = empActual;
+                    parEmp[empActual] = estEle;
                 } else {
-                    posEmpresa++;
+                    empAsign = parEst[estEle];
+                    if (pref_est[estEle][empActual] < pref_est[estEle][empAsign]) {
+                        parEst[estEle] = empActual;
+                        parEmp[empActual] = estEle;
+                        parEmp[empAsign] = -1;
+                    }
                 }
             }
         }
     }
 
-    private int empresaLibre(boolean[] empresasLibres) {
-        for (int i = 0; i < empresasLibres.length; i++) {
-            if (empresasLibres[i]) {
+    public void estudiantes_proponen() {
+        int estActual = 0, empEle, empAsign;
+        int[] sigProp = new int[estudiantes.length];
+        for (int i = 0; i < estudiantes.length; i++) {
+            sigProp[i] = 0;
+        }
+        while (objetoLibre(parEmp) != -1) {
+            estActual = objetoLibre(parEmp);
+            if (sigProp[estActual] >= empresas.length) {
+                parEmp[estActual] = -1;
+            } else {
+                empEle = pref_est[estActual][sigProp[estActual]];
+                sigProp[estActual]++;
+                if (parEst[empEle] == -1) {
+                    parEst[empEle] = estActual;
+                    parEmp[estActual] = empEle;
+                } else {
+                    empAsign = parEst[empEle];
+                    if (pref_est[empEle][estActual] < pref_est[empEle][empAsign]) {
+                        parEst[empEle] = estActual;
+                        parEmp[estActual] = empEle;
+                        parEmp[empAsign] = -1;
+                    }
+                }
+            }
+        }
+    }
+
+    private int objetoLibre(int[] parejas) {
+        for (int i = 0; i < parejas.length; i++) {
+            if (parejas[i] == -1) {
                 return i;
             }
         }
@@ -61,20 +90,16 @@ public class EmpresaEstudiante {
     public static void main(String[] args) {
         int[] empresas = { 0, 1, 2, 3 };
         int[] estudiantes = { 0, 1, 2, 3 };
-        int[][] preferencias_Empresas = { { 0, 1, 2, 3 }, { 2, 1, 3, 0 }, { 3, 1, 2, 0 }, { 2, 3, 0, 1 } }; // Preferencias
-                                                                                                            // de las
+        int[][] pref_emp = { { 0, 1, 2, 3 }, { 2, 1, 3, 0 }, { 3, 1, 2, 0 }, { 2, 3, 0, 1 } }; // Preferencias
+                                                                                               // de las
         // empresas
-        int[][] preferencias_Estudiantes = { { 2, 0, 3, 1 }, { 1, 3, 2, 0 }, { 3, 2, 1, 0 }, { 1, 3, 0, 2 } }; // Preferencias
-                                                                                                               // de los
+        int[][] pref_est = { { 2, 0, 3, 1 }, { 1, 3, 2, 0 }, { 3, 2, 1, 0 }, { 1, 3, 0, 2 } }; // Preferencias
+                                                                                               // de los
         // estudiantes
 
-        EmpresaEstudiante empEst = new EmpresaEstudiante(empresas, estudiantes, preferencias_Empresas,
-                preferencias_Estudiantes);
+        EmpresaEstudiante empEst = new EmpresaEstudiante(empresas, estudiantes, pref_emp,
+                pref_est);
         empEst.empresas_proponen();
-        System.out.println("Parejas resultantes:");
-        for (int i = 0; i < empEst.parejas.length; i++) {
-            System.out.println("(Empresa: " + empEst.empresas[i] + ", Estudiante: "
-                    + empEst.parejas[i] + ")");
-        }
+        empEst.estudiantes_proponen();
     }
 }
