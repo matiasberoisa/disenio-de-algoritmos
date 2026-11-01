@@ -1,104 +1,99 @@
 
 public class Gale {
     private int[] hombres;
-    private int[][] preferencias_Hombres;
-    private int[][] preferencias_Mujeres;
-    private int[] parejas;
+    private int[][] pref_H;
+    private int[][] pref_M;
+    private int[] parejasHombres;
+    private int[] parejasMujeres;
     private int[] mujeres;
     private Boolean[][] prohibidos;
 
-    public Gale(int[] hombres, int[] mujeres, int[][] preferencias_Hombres, int[][] preferencias_Mujeres,
+    public Gale(int[] hombres, int[] mujeres, int[][] pref_H, int[][] pref_M,
             Boolean[][] prohibidos) {
         this.hombres = hombres;
         this.mujeres = mujeres;
-        this.preferencias_Hombres = preferencias_Hombres;
-        this.preferencias_Mujeres = preferencias_Mujeres;
-        this.parejas = new int[hombres.length];
-        for (int i = 0; i < parejas.length; i++) {
-            parejas[i] = -1; // Inicialmente, todos los hombres están solteros
+        this.pref_H = pref_H;
+        this.pref_M = pref_M;
+        this.parejasHombres = new int[hombres.length];
+        for (int i = 0; i < parejasHombres.length; i++) {
+            parejasHombres[i] = -1; // Inicialmente, todos los hombres están solteros
+        }
+        this.parejasMujeres = new int[mujeres.length];
+        for (int i = 0; i < parejasMujeres.length; i++) {
+            parejasMujeres[i] = -1; // Inicialmente, todas las mujeres están solteras
         }
         this.prohibidos = prohibidos;
     }
 
     public void emparejar() {
-        boolean[] hombresSolteros = new boolean[hombres.length];
-        int hombreActual = 0, pos, posLista;
-        for (int i = 0; i < hombresSolteros.length; i++) {
-            hombresSolteros[i] = true; // Todos los hombres están solteros al inicio
+        int homAct = 0;
+        int[] sigProp = new int[hombres.length];
+        for (int i = 0; i < hombres.length; i++) {
+            sigProp[i] = 1;
         }
-        while (hayHombreSoltero(hombresSolteros) && hombreActual < hombres.length) {
-            Lista pref_H = new Lista();
-            pos = 0;
-            posLista = 1;
-            while (pos < preferencias_Hombres[hombreActual].length) {// creo la lista filtrada
-                if (!prohibidos[hombreActual][pos]) {
-                    pref_H.insertar(preferencias_Hombres[hombreActual][pos], posLista);
-                    posLista++;
-                }
-                pos++;
-            }
-            System.out.println(pref_H.toString());
-            if (hombresSolteros[hombreActual]) {
-                int mujerActual = 1;
-                pos = 0;
-                while (mujerActual <= pref_H.longitud()) {
-                    int mujerPreferida = (int) pref_H.recuperar(mujerActual); // Obtener la mujer preferida del hombre
-                                                                              // actual
-                    while (pos < parejas.length && parejas[pos] != mujerPreferida) {
-                        pos++;
-                    }
-                    if (parejas[hombreActual] == -1 && pos == parejas.length) { // La mujer
-                        // está
-                        // soltera y no
-                        // está
-                        // prohibida
-                        // La mujer no está emparejada con ningún otro hombre
-                        parejas[hombreActual] = mujerPreferida; // Emparejar al hombre con la mujer
-                        hombresSolteros[hombreActual] = false; // El hombre ya no está soltero
-                    }
-                    mujerActual++;
+        Lista[] listas = new Lista[hombres.length];
+        for (int i = 0; i < hombres.length; i++) {
+            listas[i] = new Lista();
+            for (int j = 0; j < pref_H[i].length; j++) {
+                if (!prohibidos[i][j]) {
+                    listas[i].insertar(pref_H[i][j], listas[i].longitud() + 1);
                 }
             }
-            hombreActual++;
+        }
+        while (hombreSoltero(parejasHombres) != -1) {
+            homAct = hombreSoltero(parejasHombres);
+            while (parejasHombres[homAct] == -1
+                    && sigProp[homAct] <= listas[homAct].longitud()) {
+                int mujerPref = (int) listas[homAct].recuperar(sigProp[homAct]);
+                sigProp[homAct]++;
+                if (parejasMujeres[mujerPref] == -1) {
+                    parejasMujeres[mujerPref] = homAct;
+                    parejasHombres[homAct] = mujerPref;
+                } else {
+                    int mujerAsign = parejasMujeres[mujerPref];
+                    if (pref_M[mujerPref][homAct] < pref_M[mujerPref][mujerAsign]) {
+                        parejasMujeres[mujerPref] = homAct;
+                        parejasHombres[homAct] = mujerPref;
+                        parejasHombres[mujerAsign] = -1;
+                    }
+                }
+            }
+            if (parejasHombres[homAct] == -1) {
+                parejasHombres[homAct] = -2;
+            }
         }
     }
 
-    private boolean hayHombreSoltero(boolean[] hombresSolteros) {
-        boolean sigueSoltero = false;
-        for (boolean soltero : hombresSolteros) {
-            if (soltero) {
-                sigueSoltero = true;
-                break;
+    private int hombreSoltero(int[] parejas) {
+        for (int i = 0; i < parejas.length; i++) {
+            if (parejas[i] == -1) {
+                return i;
             }
         }
-        return sigueSoltero;
+        return -1;
     }
 
     public static void main(String[] args) {
-        int[] hombres = { 1, 2, 3 };
-        int[] mujeres = { 4, 5, 6, 7, 8 };
-        int[][] preferencias_Hombres = { { 4, 5, 6, 7, 8 }, { 5, 6, 4, 8, 7 }, { 5, 4, 6, 8, 7 } }; // Preferencias de
-                                                                                                    // los
-        // hombres
-        int[][] preferencias_Mujeres = { { 3, 1, 2 }, { 1, 3, 2 }, { 2, 3, 1 } }; // Preferencias de las
-                                                                                  // mujeres
-        Boolean[][] prohibidos = { { true, false, false, false, true }, { false, false, true, false, true },
-                { false, false, true, true, false } }; // La
-        // pareja
-        // (2, 6) está
-        // prohibida
-
-        Gale galeShapley = new Gale(hombres, mujeres, preferencias_Hombres, preferencias_Mujeres, prohibidos);
-        galeShapley.emparejar();
-
-        System.out.println("Parejas formadas:");
-        for (int i = 0; i < galeShapley.parejas.length; i++) {
-            if (galeShapley.parejas[i] != -1) {
-                System.out.println("Hombre " + galeShapley.hombres[i] + " está emparejado con Mujer "
-                        + galeShapley.parejas[i]);
-            } else {
-                System.out.println("Hombre " + galeShapley.hombres[i] + " está soltero");
-            }
+        int[] hombres = { 0, 1, 2, 3, 4 };
+        int[] mujeres = { 0, 1, 2, 3, 4 };
+        int[][] pref_H = {
+                { 0, 1, 2, 3, 4 }, { 1, 2, 0, 4, 3 }, { 1, 0, 2, 4, 3 },
+                { 2, 3, 4, 0, 1 }, { 4, 3, 2, 1, 0 } };
+        int[][] pref_M = {
+                { 3, 1, 2, 0, 4 }, { 1, 3, 2, 4, 0 }, { 2, 3, 1, 4, 0 },
+                { 0, 1, 2, 3, 4 }, { 4, 3, 2, 1, 0 } };
+        Boolean[][] prohibidos = {
+                { true, false, false, false, true }, { false, false, true, false, true },
+                { false, false, true, true, false }, { false, true, false, true, false },
+                { false, false, false, false, false } };
+        Gale g = new Gale(hombres, mujeres, pref_H, pref_M, prohibidos);
+        g.emparejar();
+        // impresión
+        for (int i = 0; i < g.parejasHombres.length; i++) {
+            if (g.parejasHombres[i] >= 0)
+                System.out.println("Hombre " + g.hombres[i] + " con Mujer " + g.mujeres[g.parejasHombres[i]]);
+            else
+                System.out.println("Hombre " + g.hombres[i] + " está soltero");
         }
     }
 }
