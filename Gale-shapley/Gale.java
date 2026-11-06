@@ -37,7 +37,6 @@ public class Gale {
                 }
                 pos++;
             }
-            System.out.println(pref_H.toString());
             if (hombresSolteros[hombreActual]) {
                 int mujerActual = 1;
                 pos = 0;

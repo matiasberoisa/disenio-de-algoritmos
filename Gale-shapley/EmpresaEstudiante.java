@@ -23,7 +23,7 @@ public class EmpresaEstudiante {
     }
 
     public void empresas_proponen() {
-        int empActual = 0, estEle, empAsign;
+        int empActual, estEle, empAsign;
         int[] sigProp = new int[empresas.length];
         for (int i = 0; i < empresas.length; i++) {
             sigProp[i] = 0;
@@ -51,7 +51,7 @@ public class EmpresaEstudiante {
     }
 
     public void estudiantes_proponen() {
-        int estActual = 0, empEle, empAsign;
+        int estActual, empEle, empAsign;
         int[] sigProp = new int[estudiantes.length];
         for (int i = 0; i < estudiantes.length; i++) {
             sigProp[i] = 0;
@@ -90,16 +90,18 @@ public class EmpresaEstudiante {
     public static void main(String[] args) {
         int[] empresas = { 0, 1, 2, 3 };
         int[] estudiantes = { 0, 1, 2, 3 };
-        int[][] pref_emp = { { 0, 1, 2, 3 }, { 2, 1, 3, 0 }, { 3, 1, 2, 0 }, { 2, 3, 0, 1 } }; // Preferencias
+        int[][] pref_emp = { { 1, 0, 3, 2 }, { 1, 3, 2, 0 }, { 2, 3, 1, 0 }, { 2, 3, 0, 1 } }; // Preferencias
                                                                                                // de las
         // empresas
-        int[][] pref_est = { { 2, 0, 3, 1 }, { 1, 3, 2, 0 }, { 3, 2, 1, 0 }, { 1, 3, 0, 2 } }; // Preferencias
+        int[][] pref_est = { { 2, 0, 3, 1 }, { 1, 3, 2, 0 }, { 3, 2, 1, 0 }, { 2, 3, 0, 1 } }; // Preferencias
                                                                                                // de los
         // estudiantes
 
         EmpresaEstudiante empEst = new EmpresaEstudiante(empresas, estudiantes, pref_emp,
                 pref_est);
         empEst.empresas_proponen();
-        empEst.estudiantes_proponen();
+        for (int i = 0; i < empEst.parEmp.length; i++) {
+            System.out.println("Empresa " + i + " emparejada con Estudiante " + empEst.parEmp[i]);
+        }
     }
 }
